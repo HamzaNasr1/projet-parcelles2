@@ -64,7 +64,7 @@ try:
             print(f"⚠️ Impossible de convertir le CRS: {e}")
         
         # 4. Limiter pour la performance
-        parcelles = parcelles.head(500)
+        parcelles = parcelles.head(50)
         print(f"📊 Limité à {len(parcelles)} parcelles")
         
         # 5. Gestion intelligente des colonnes
