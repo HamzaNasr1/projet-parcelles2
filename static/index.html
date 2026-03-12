@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>GéoCadastre • Aisne 02</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    
+    <!-- Leaflet CSS/JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i class="fas fa-draw-polygon"></i>
+                </div>
+                <h1>GéoCadastre</h1>
+                <div class="subtitle">Aisne • 02</div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-row">
+                    <span class="stats-label">Parcelles chargées</span>
+                    <span class="stats-value" id="parcelleCount">500</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <div class="stats-row">
+                    <span class="stats-label">Département</span>
+                    <span class="stats-value">Aisne</span>
+                </div>
+            </div>
+
+            <div class="menu-title">Navigation</div>
+            
+            <button class="nav-button active" id="mapViewBtn">
+                <i class="fas fa-map"></i>
+                Vue Carte
+            </button>
+            
+            <button class="nav-button" id="parcellesViewBtn">
+                <i class="fas fa-layer-group"></i>
+                Parcelles
+            </button>
+            <button class="nav-button" id="parcellesListBtn">
+    <i class="fas fa-list"></i>
+      Catalogue Parcelles
+</button>
+            
+            <button class="nav-button readme-btn" id="readmeBtn">
+                <i class="fas fa-book-open"></i>
+                Documentation
+            </button>
+
+            <div class="footer-info">
+                <i class="fas fa-database"></i> API Cadastrale v1.0<br>
+                Données PCI • 2024
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div id="map"></div>
+            
+            <!-- Map Controls -->
+            <div class="map-controls">
+                <button class="control-btn" id="zoomInBtn">
+                    <i class="fas fa-plus"></i>
+                </button>
+                <button class="control-btn" id="zoomOutBtn">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button class="control-btn" id="locateBtn">
+                    <i class="fas fa-crosshairs"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loader"></div>
+        </div>
+
+        <!-- README Modal -->
+        <div class="modal" id="readmeModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-book-open" style="margin-right: 10px;"></i> Documentation Technique</h2>
+                    <i class="fas fa-times" id="closeModal"></i>
+                </div>
+                <div class="modal-body" id="readmeContent">
+                   <h1>API Parcelles Cadastrales - Aisne (02)</h1>
+<p>Application web permettant de visualiser les parcelles cadastrales du département de l'Aisne (02) sur une carte interactive, avec une API FastAPI en backend et Leaflet en frontend.</p>
+
+<h2>Technologies utilisées</h2>
+<ul>
+    <li><strong>Backend:</strong> FastAPI (Python)</li>
+    <li><strong>Frontend:</strong> HTML, JavaScript, Leaflet</li>
+    <li><strong>Données géospatiales:</strong> GeoPandas, Shapefile</li>
+    <li><strong>Carte:</strong> OpenStreetMap</li>
+</ul>
+
+<h2>Structure du projet</h2>
+<pre>
+projet_parcelles/
+│
+├── main.py                 # Application FastAPI principale
+├── README.md               # Documentation du projet
+├── requirements.txt        # Dépendances Python
+│
+├── DATA/                   # Dossier des données
+│   └── parcelles.shp       # Shapefile des parcelles (Aisne)
+│
+└── static/                 # Fichiers statiques
+    └── index.html          # Interface utilisateur
+
+</pre>
+
+<h2>Installation</h2>
+<h3>Étapes d'installation</h3>
+<pre>
+1. Installer les dépendances
+$ pip install -r requirements.txt
+</pre>
+
+<h2>Lancement de l'application</h2>
+<pre>
+1. Démarrer le serveur
+$ python -m uvicorn main:app --reload
+
+2. Accéder à l'application
+- Interface web: http://127.0.0.1:8000/map
+- API Parcelles: http://127.0.0.1:8000/parcelles
+</pre>
+
+<h2>Points d'API disponibles</h2>
+<table border="1" cellpadding="5" cellspacing="0">
+    <tr>
+        <th>Endpoint</th>
+        <th>Méthode</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td>/</td>
+        <td>GET</td>
+        <td>Informations sur l'API</td>
+    </tr>
+    <tr>
+        <td>/parcelles</td>
+        <td>GET</td>
+        <td>Récupère toutes les parcelles (GeoJSON)</td>
+    </tr>
+    <tr>
+        <td>/map</td>
+        <td>GET</td>
+        <td>Affiche l'interface cartographique</td>
+    </tr>
+</table>
+
+<h2>Utilisation</h2>
+<h3>Interface cartographique</h3>
+<ol>
+    <li>Ouvrez votre navigateur à l'adresse <code>http://127.0.0.1:8000/map</code></li>
+    <li>La carte affiche automatiquement toutes les parcelles du shapefile</li>
+    <li>Cliquez sur une parcelle pour voir son numéro</li>
+    <li>Utilisez les contrôles de zoom pour naviguer</li>
+</ol>
+
+<h3>API</h3>
+<pre>
+# Exemple d'appel API avec Python
+import requests
+
+response = requests.get("http://127.0.0.1:8000/parcelles")
+parcelles = response.json()
+print(f"Nombre de parcelles: {len(parcelles['features'])}")
+</pre>
+
+<h2>Configuration</h2>
+<h3>Limitation des données</h3>
+<pre>
+# Dans main.py
+parcelles = parcelles.head(1000)  # Charge 1000 parcelles
+</pre>
+
+<h3>Format des données</h3>
+<ul>
+    <li>Projection: EPSG:4326 (WGS84)</li>
+    <li>Format de sortie: GeoJSON</li>
+    <li>Colonnes conservées: geometry, numero_parcelle</li>
+</ul>
+
+
+<h2>Auteur</h2>
+<p>Hamza Nasr</p>
+
+<h2>Licence</h2>
+<p>Ce projet est réalisé dans le cadre d'un exercice technique.</p>
+
+<hr>
+<p><strong>Note:</strong> Projet développé dans le cadre d'un exercice interne - Données cadastrales de l'Aisne (02)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div class="toast" id="toast">
+            <i class="fas fa-check-circle" style="margin-right: 8px;"></i>
+            <span id="toastMessage">Action réussie</span>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_URL = 'http://127.0.0.1:8000';
+        let map, geoLayer;
+        let currentView = 'map';
+
+        // Initialisation de la carte
+        function initMap() {
+            map = L.map('map').setView([49.5, 3.5], 9);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                className: 'map-tiles'
+            }).addTo(map);
+
+            // Ajout d'une échelle
+            L.control.scale({ imperial: false, metric: true }).addTo(map);
+
+            loadParcelles();
+        }
+
+        // Chargement des parcelles
+        async function loadParcelles() {
+            showLoading();
+            
+            try {
+                const response = await fetch(`${API_URL}/parcelles`);
+                const data = await response.json();
+                
+                // Mise à jour du compteur
+                document.getElementById('parcelleCount').textContent = data.features.length;
+                
+                if (geoLayer) {
+                    map.removeLayer(geoLayer);
+                }
+
+                geoLayer = L.geoJSON(data, {
+                    style: function(feature) {
+                        return {
+                            color: "#3b82f6",
+                            weight: 2,
+                            fillColor: "#10b981",
+                            fillOpacity: 0.3,
+                            dashArray: '3'
+                        };
+                    },
+                    onEachFeature: function(feature, layer) {
+                        const parcelleNum = feature.properties.numero_parcelle || 'N/A';
+                        
+                        layer.bindPopup(`
+                            <div style="font-family: 'Inter', sans-serif; padding: 5px;">
+                                <h3 style="margin: 0 0 5px 0; color: #1f2937;">Parcelle</h3>
+                                <p style="margin: 0; color: #4b5563;">
+                                    <strong>Numéro:</strong> ${parcelleNum}<br>
+                                    <strong>Surface:</strong> ${(feature.properties.surface || 'N/A')} m²
+                                </p>
+                            </div>
+                        `);
+
+                        layer.on('mouseover', function() {
+                            this.setStyle({
+                                weight: 4,
+                                color: '#ef4444',
+                                fillOpacity: 0.5
+                            });
+                        });
+
+                        layer.on('mouseout', function() {
+                            geoLayer.resetStyle(this);
+                        });
+                    }
+                }).addTo(map);
+
+                map.fitBounds(geoLayer.getBounds());
+                showToast(`${data.features.length} parcelles chargées avec succès`);
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                showToast('Erreur de chargement des données', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Gestionnaire de vues
+        document.getElementById('mapViewBtn').addEventListener('click', function() {
+            setActiveButton(this);
+            currentView = 'map';
+            showToast('Vue carte activée');
+        });
+
+        document.getElementById('parcellesViewBtn').addEventListener('click', function() {
+            setActiveButton(this);
+            currentView = 'parcelles';
+            map.fitBounds(geoLayer.getBounds());
+            showToast('Affichage des parcelles');
+        });
+
+        // README Modal
+        document.getElementById('readmeBtn').addEventListener('click', async function() {
+            const modal = document.getElementById('readmeModal');
+            modal.classList.add('active');
+            
+            try {
+                const response = await fetch(`${API_URL}/`);
+                const data = await response.json();
+                document.getElementById('readmeContent').innerHTML = `
+                    <h3>API Endpoints</h3>
+                    <ul>
+                        ${data.routes.map(route => `<li><code>${route}</code></li>`).join('')}
+                    </ul>
+                    <h3>Documentation Complète</h3>
+                    <p>Consultez le README.md du projet pour plus d'informations.</p>
+                `;
+            } catch (error) {
+            }
+        });
+
+        document.getElementById('closeModal').addEventListener('click', function() {
+            document.getElementById('readmeModal').classList.remove('active');
+        });
+
+        // Contrôles de carte
+        document.getElementById('zoomInBtn').addEventListener('click', () => {
+            map.zoomIn();
+        });
+
+        document.getElementById('zoomOutBtn').addEventListener('click', () => {
+            map.zoomOut();
+        });
+
+        document.getElementById('locateBtn').addEventListener('click', () => {
+            map.locate({ setView: true, maxZoom: 16 });
+        });
+
+        // Fonctions utilitaires
+        function setActiveButton(activeBtn) {
+            document.querySelectorAll('.nav-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            activeBtn.classList.add('active');
+        }
+
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('active');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            toast.style.background = type === 'success' ? '#10b981' : '#ef4444';
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Fermeture du modal avec Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.getElementById('readmeModal').classList.remove('active');
+            }
+        });
+        document.getElementById('parcellesListBtn').addEventListener('click', function() {
+    setActiveButton(this); // Met le bouton en actif
+    window.location.href = '/parcelles'; // Redirection vers la route /parcells
+});
+
+        // Initialisation
+        window.addEventListener('load', initMap);
+    </script>
+</body>
+</html>
