@@ -17,7 +17,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["*"],##
     allow_headers=["*"],
 )
 
@@ -64,7 +64,7 @@ try:
             print(f"⚠️ Impossible de convertir le CRS: {e}")
         
         # 4. Limiter pour la performance
-        parcelles = parcelles.head(50)
+        parcelles = parcelles.head(500)
         print(f"📊 Limité à {len(parcelles)} parcelles")
         
         # 5. Gestion intelligente des colonnes
